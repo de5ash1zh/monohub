@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MonoHub Lookup</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+
+  <body
+    class="bg-white text-black font-mono min-h-screen flex items-center justify-center p-4"
+  >
+    <div class="w-full max-w-md mx-auto space-y-6">
+      <!-- Header -->
+      <header class="text-center">
+        <h1 class="text-2xl font-semibold">MonoHub Lookup</h1>
+      </header>
+
+      <!-- Search Bar -->
+      <div class="flex items-center gap-2 border-b border-gray-300 pb-2">
+        <input
+          type="text"
+          placeholder="GitHub username"
+          class="usernameinp flex-1 bg-transparent outline-none px-2 py-1 text-black placeholder-gray-400 text-base"
+        />
+        <button
+          class="search px-3 py-1 text-base text-black border border-gray-300 rounded hover:bg-gray-100 transition active:scale-95 focus:ring-2 focus:ring-black"
+        >
+          Search
+        </button>
+      </div>
+      <!-- Loading Indicator -->
+      <div
+        class="loading-indicator text-center text-gray-500 py-2 hidden text-sm"
+      >
+        <span
+          class="inline-block w-5 h-5 align-middle border-2 border-gray-300 border-t-black rounded-full animate-spin"
+        ></span>
+      </div>
+      <!-- Error Message -->
+      <div
+        class="error-message text-center text-red-500 py-2 text-sm opacity-0 transition-opacity duration-300"
+      ></div>
+
+      <!-- Profile Card (Dummy Data) -->
+      <div
+        class="card space-y-2 opacity-0 transition-opacity duration-500"
+      ></div>
+      <!-- Repositories List -->
+      <div
+        class="repos-list space-y-2 opacity-0 transition-opacity duration-500"
+      ></div>
+      <div class="show-more-container text-center mt-2">
+        <button
+          class="show-more px-3 py-1 text-base text-black border border-gray-300 rounded hover:bg-gray-100 transition active:scale-95 focus:ring-2 focus:ring-black hidden"
+        >
+          Show More
+        </button>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
