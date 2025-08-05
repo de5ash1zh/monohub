@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MonoHub Lookup</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.3/dist/cal-heatmap.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.3/dist/cal-heatmap.css"
+    />
   </head>
 
   <body
@@ -29,6 +34,7 @@
           Search
         </button>
       </div>
+
       <!-- Loading Indicator -->
       <div
         class="loading-indicator text-center text-gray-500 py-2 hidden text-sm"
@@ -37,19 +43,35 @@
           class="inline-block w-5 h-5 align-middle border-2 border-gray-300 border-t-black rounded-full animate-spin"
         ></span>
       </div>
+
       <!-- Error Message -->
       <div
         class="error-message text-center text-red-500 py-2 text-sm opacity-0 transition-opacity duration-300"
       ></div>
 
-      <!-- Profile Card (Dummy Data) -->
+      <!-- Profile Card -->
       <div
         class="card space-y-2 opacity-0 transition-opacity duration-500"
       ></div>
+
+      <!-- Contribution Heatmap -->
+      <div
+        class="contributions text-center opacity-0 transition-opacity duration-500"
+      >
+        <div class="font-semibold text-base mb-2">Contribution Activity</div>
+        <img
+          src=""
+          alt="GitHub Contribution Graph"
+          class="mx-auto contribution-img"
+        />
+      </div>
+
       <!-- Repositories List -->
       <div
         class="repos-list space-y-2 opacity-0 transition-opacity duration-500"
       ></div>
+
+      <!-- Show More Button -->
       <div class="show-more-container text-center mt-2">
         <button
           class="show-more px-3 py-1 text-base text-black border border-gray-300 rounded hover:bg-gray-100 transition active:scale-95 focus:ring-2 focus:ring-black hidden"
@@ -58,6 +80,7 @@
         </button>
       </div>
     </div>
+
     <script src="script.js"></script>
   </body>
 </html>

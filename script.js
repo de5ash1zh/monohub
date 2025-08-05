@@ -2,37 +2,39 @@
 // Main script for fetching and displaying GitHub user data and repositories
 
 // DOM element references
-let searchBtn = document.querySelector(".search"); // Search button
-let usernameinp = document.querySelector(".usernameinp"); // Username input field
-let card = document.querySelector(".card"); // Profile card container
-let reposList = document.querySelector(".repos-list"); // Repositories list container
-let loadingIndicator = document.querySelector(".loading-indicator"); // Loading spinner
-let errorMessage = document.querySelector(".error-message"); // Error message container
-let showMoreBtn = document.querySelector(".show-more"); // Show More button
+let searchBtn = document.querySelector(".search");
+let usernameinp = document.querySelector(".usernameinp");
+let card = document.querySelector(".card");
+let reposList = document.querySelector(".repos-list");
+let loadingIndicator = document.querySelector(".loading-indicator");
+let errorMessage = document.querySelector(".error-message");
+let showMoreBtn = document.querySelector(".show-more");
 
-// State variables for pagination
+let contribImg = document.querySelector(".contribution-img");
+let contribDiv = document.querySelector(".contributions");
+
+// State variables
 let currentUsername = null;
 let currentPage = 1;
 let perPage = 5;
 let totalRepos = 0;
 
-// Show or hide the loading spinner
+// Show or hide loading spinner
 function setLoading(isLoading) {
   loadingIndicator.classList.toggle("hidden", !isLoading);
 }
 
-// Fade-in utility for smooth UI transitions
+// Fade utilities
 function showFadeIn(el) {
   el.classList.remove("opacity-0");
   el.classList.add("opacity-100");
 }
-// Fade-out utility for smooth UI transitions
 function hideFadeOut(el) {
   el.classList.remove("opacity-100");
   el.classList.add("opacity-0");
 }
 
-// Display or hide error messages with animation
+// Show or hide error message
 function setError(msg) {
   errorMessage.textContent = msg || "";
   if (msg) {
@@ -42,13 +44,15 @@ function setError(msg) {
   }
 }
 
-// Clear all UI content and reset fade states
+// Reset all UI areas
 function clearUI() {
   card.innerHTML = "";
   reposList.innerHTML = "";
   setError("");
   card.classList.add("opacity-0");
   reposList.classList.add("opacity-0");
+  contribDiv.classList.add("opacity-0");
+  contribImg.src = "";
 }
 
 // Fetch GitHub user profile data
@@ -59,7 +63,7 @@ function getProfileData(username) {
   });
 }
 
-// Fetch GitHub user repositories (paginated)
+// Fetch GitHub repositories (paginated)
 function getRepos(username, page = 1, perPage = 5) {
   return fetch(
     `https://api.github.com/users/${username}/repos?sort=updated&per_page=${perPage}&page=${page}`
@@ -69,7 +73,7 @@ function getRepos(username, page = 1, perPage = 5) {
   });
 }
 
-// Render the user's profile info in a minimal, structured table
+// Render profile data
 function decorateProfileData(details) {
   let data = `<div class="flex items-center gap-4 mb-2">
     <img src="${
@@ -84,7 +88,7 @@ function decorateProfileData(details) {
     <table class="w-full text-sm">
       <tbody>
         <tr><td class="pr-2 text-gray-500">Bio</td><td>${
-          details.bio ? details.bio : "-"
+          details.bio || "-"
         }</td></tr>
         <tr><td class="pr-2 text-gray-500">Repos</td><td>${
           details.public_repos
@@ -119,7 +123,7 @@ function decorateProfileData(details) {
   showFadeIn(card);
 }
 
-// Render the user's repositories in a minimal list
+// Render repositories
 function decorateRepos(repos, append = false) {
   if (!repos.length && !append) {
     reposList.innerHTML =
@@ -127,9 +131,11 @@ function decorateRepos(repos, append = false) {
     showMoreBtn.classList.add("hidden");
     return;
   }
+
   let html = append
     ? reposList.innerHTML
     : `<div class='font-semibold mb-1 text-base'>Repositories</div><ul class='space-y-1'>`;
+
   html += repos
     .map(
       (repo) => `
@@ -151,16 +157,16 @@ function decorateRepos(repos, append = false) {
           <span>⭐ ${repo.stargazers_count}</span>
           <span>🍴 ${repo.forks_count}</span>
         </div>
-      </li>
-    `
+      </li>`
     )
     .join("");
+
   if (!append) html += `</ul>`;
   reposList.innerHTML = html;
   showFadeIn(reposList);
 }
 
-// Handle the main search action: fetch and display user info and repos
+// Handle search
 function handleSearch() {
   let username = usernameinp.value.trim();
   clearUI();
@@ -172,12 +178,22 @@ function handleSearch() {
         currentUsername = username;
         currentPage = 1;
         totalRepos = data.public_repos;
+
+        // Load heatmap
+        contribImg.src = `https://ghchart.rshah.org/${data.login}`;
+        contribImg.onerror = () => {
+          contribDiv.classList.add("hidden");
+        };
+        contribImg.onload = () => {
+          contribDiv.classList.remove("hidden");
+          showFadeIn(contribDiv);
+        };
+
         return getRepos(username, currentPage, perPage);
       })
       .then((repos) => {
         decorateRepos(repos);
         setLoading(false);
-        // Show or hide the Show More button based on repo count
         if (totalRepos > perPage) {
           showMoreBtn.classList.remove("hidden");
         } else {
@@ -195,22 +211,22 @@ function handleSearch() {
   }
 }
 
-// Event: Search button click
+// Event: Search button
 searchBtn.addEventListener("click", handleSearch);
 
-// Event: Enter key triggers search
+// Event: Press Enter to search
 usernameinp.addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     handleSearch();
   }
 });
 
-// Event: Autofocus input on page load
+// Event: Autofocus on page load
 window.addEventListener("DOMContentLoaded", function () {
   usernameinp.focus();
 });
 
-// Event: Show More button loads more repos
+// Event: Show more repositories
 showMoreBtn.addEventListener("click", function () {
   if (!currentUsername) return;
   setLoading(true);
@@ -218,7 +234,6 @@ showMoreBtn.addEventListener("click", function () {
     .then((repos) => {
       decorateRepos(repos, true);
       setLoading(false);
-      // Hide button if we've loaded all repos
       if (currentPage * perPage >= totalRepos || repos.length < perPage) {
         showMoreBtn.classList.add("hidden");
       }
